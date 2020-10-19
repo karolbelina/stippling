@@ -2,10 +2,28 @@
 <html>
   <head>
     <title>stippling</title>
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+        font-size: 0;
+        line-height: 0;
+      }
+    </style>
   </head>
   <body>
     <div id="stippling"></div>
     <script src="js/main.js"></script>
-    <script>stippling.core.run_sketch()</script>
+    <script>
+      function createSketch(url) {   
+        var img = new Image();
+        img.onload = function() {
+          stippling.core.run_sketch(this.src, this.width, this.height);
+        };
+        img.src = url;
+      }
+
+      createSketch("https://placekitten.com/800/600");
+    </script>
   </body>
 </html>

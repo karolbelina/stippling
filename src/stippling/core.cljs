@@ -2,34 +2,28 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]))
 
-; -4 -3 -2 -1  0  1  2  3  4
-; 0   3  2  1  0  3  2  1  0
-(defn transform-offset [offset size]
-  (mod (- size (mod offset size)) size))
+(defn generate-line-lattice [sl l o]
+  (let [generated-range (range (+ (/ sl l) 1))
+        transformed-offset (mod (- l (mod o l)) l)
+        half-length (/ l 2)]
+    (map (fn [x] (+ (- (* x l) transformed-offset) half-length)) generated-range)))
 
-;     |....----....----....----|.... +4
-;    .|...----....----....----.|...  +3
-;   ..|..----....----....----..|..   +2
-;  ...|.----....----....----...|.    +1
-;     |----....----....----....|---- 0
-;    -|---....----....----....-|---  -1
-;   --|--....----....----....--|--   -2
-;  ---|-....----....----....---|-    -3
-;     |....----....----....----|     -4
-(defn generate-line-lattice [len size offset]
-  (let [generated-range (range (/ len size))
-        transformed-offset (transform-offset offset size)
-        half-size (/ size 2)]
-    (map (fn [x]
-      (+ (- (* x size) transformed-offset) half-size)) generated-range)))
-
-(defn generate-square-lattice [w h size x y]
-  (let [xs (generate-line-lattice w size x)
-        ys (generate-line-lattice h size y)]
+(defn generate-rect-lattice [sw sh w h x y]
+  (let [xs (generate-line-lattice sw w x)
+        ys (generate-line-lattice sh h y)]
     (for [x xs, y ys] {:x x, :y y})))
 
+(defn generate-square-lattice [sw sh a x y]
+  (generate-rect-lattice sw sh a a x y))
+
+(defn generate-hexagonal-lattice [sw sh a x y]
+  (let [a-sqrt-3 (* a (q/sqrt 3))
+        set-a (generate-rect-lattice sw sh a a-sqrt-3 x y)
+        set-b (generate-rect-lattice sw sh a a-sqrt-3 (+ x (/ a 2)) (+ y (/ a-sqrt-3 2)))]
+    (concat set-a set-b)))
+
 (defn setup-state [data w h]
-  {:points (generate-square-lattice w h 5 0 0)
+  {:points (generate-hexagonal-lattice w h 10 0 0)
    :image (q/load-image data)})
 
 (defn update-state [state]
@@ -51,7 +45,7 @@
   ; (q/image (:image state) 0 0)
   (doseq [point (:points state)]
     (let [value (calculate-radius (:image state) point)
-          r (* value 7)]
+          r (* value 10)]
       (q/ellipse (:x point) (:y point) r r))))
 
 (defn ^:export run-sketch [data w h]

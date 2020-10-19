@@ -4,6 +4,9 @@
     <title>stippling</title>
     <style>
       body {
+        font-family: monospace;
+      }
+      body.postsetup {
         padding: 0;
         margin: 0;
         font-size: 0;
@@ -12,6 +15,12 @@
     </style>
   </head>
   <body>
+    <div id="setup">
+      <h1>Stippling</h1>
+      <p>Paste a URL to an image below</p>
+      <input type="text" id="url" name="url" value="https://placekitten.com/1200/600">
+      <button onclick="handleClick();">Submit</button>
+    </div>
     <div id="stippling"></div>
     <script src="js/main.js"></script>
     <script>
@@ -23,7 +32,16 @@
         img.src = url;
       }
 
-      createSketch("https://placekitten.com/800/600");
+      function hideSetup() {
+        document.getElementById('setup').style.display = 'none';
+        document.body.className += ' postsetup';
+      }
+
+      function handleClick() {
+        const url = document.getElementById('url').value;
+        hideSetup();
+        createSketch(url);
+      }
     </script>
   </body>
 </html>

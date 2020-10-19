@@ -33,7 +33,7 @@
     texture))
 
 (defn setup-state [data w h]
-  {:points (generate-hexagonal-lattice w h 7 0 0)
+  {:points (generate-hexagonal-lattice w h 8 0 0)
    :texture (setup-texture data w h)
    :width w
    :height h})
@@ -52,7 +52,7 @@
   (q/fill 255 255 255)
   (doseq [point (:points state)]
     (let [value (calculate-radius state point)
-          r (* value 10)]
+          r (* value 11)]
       (q/ellipse (:x point) (:y point) r r)))
   (q/no-loop))
 

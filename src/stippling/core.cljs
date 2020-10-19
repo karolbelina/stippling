@@ -33,7 +33,7 @@
     texture))
 
 (defn setup-state [data w h]
-  {:points (generate-hexagonal-lattice w h 8 0 0)
+  {:points (generate-hexagonal-lattice w h 7 0 0)
    :texture (setup-texture data w h)
    :width w
    :height h})
@@ -41,11 +41,10 @@
 (defn calculate-radius [state point]
   (let [w (:width state)
         h (:height state)
-        x (max 0 (min w (int (:x point))))
-        y (max 0 (min h (int (:y point))))
-        i (+ (* y w) x)
-        pixel (aget (:texture state) i)]
-    pixel))
+        x (max 0 (min (- w 1) (int (:x point))))
+        y (max 0 (min (- h 1) (int (:y point))))
+        i (+ (* y w) x)]
+    (aget (:texture state) i)))
 
 (defn draw-state [state]
   (q/background 0)

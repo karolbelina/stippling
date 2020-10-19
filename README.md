@@ -1,6 +1,8 @@
 # stippling
 
-A Quil sketch designed to ... well, that part is up to you.
+This project is an attempt to create a stippling algorithm for reproducing images as dot patterns. The image is loaded and the pixel information is stored in an array. Then the space is populated with points on a hexagonal lattice. Each point appears as bright as is the pixel array behind it. This produces pleasant-looking patterns as a result of a relatively simple set of calculations.
+
+The project serves mainly as my study and introduction to Clojure, ClojureScript, Figwheel, and Quil.
 
 ## Usage
 

@@ -1,5 +1,5 @@
 (defproject stippling "0.1.0"
-  :description "FIXME: write description"
+  :description "Reproducing images as dot patterns"
   :url "https://github.com/karolbelina/stippling"
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [quil "3.1.0"]

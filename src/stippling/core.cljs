@@ -22,31 +22,40 @@
         set-b (generate-rect-lattice sw sh a a-sqrt-3 (+ x (/ a 2)) (+ y (/ a-sqrt-3 2)))]
     (concat set-a set-b)))
 
-(defn setup-state [data w h]
-  {:points (generate-hexagonal-lattice w h 10 0 0)
-   :image (q/load-image data)})
+(defn setup-texture [data w h]
+  (let [pixel-count (* w h)
+        texture (vec (repeat pixel-count 0))]
+    (dotimes [i pixel-count]
+      (let [r (aget data (+ (* i 4) 0))
+            g (aget data (+ (* i 4) 1))
+            b (aget data (+ (* i 4) 2))]
+        (aset texture i (/ (+ r b g) 3 255))))
+    texture))
 
-(defn update-state [state]
-  {:points (:points state)
-   :image (:image state)})
+(defn setup-state [data w h]
+  {:points (generate-hexagonal-lattice w h 8 0 0)
+   :texture (setup-texture data w h)
+   :width w
+   :height h})
   
-(defn calculate-radius [image point]
-  (let [pixel (q/get-pixel image (:x point) (:y point))
-        r (aget pixel 0)
-        g (aget pixel 1)
-        b (aget pixel 2)
-        average-rgb (/ (+ r g b) 3)]
-    (/ average-rgb 255)))
+(defn calculate-radius [state point]
+  (let [w (:width state)
+        h (:height state)
+        x (max 0 (min w (int (:x point))))
+        y (max 0 (min h (int (:y point))))
+        i (+ (* y w) x)
+        pixel (aget (:texture state) i)]
+    pixel))
 
 (defn draw-state [state]
   (q/background 0)
   (q/no-stroke)
   (q/fill 255 255 255)
-  ; (q/image (:image state) 0 0)
   (doseq [point (:points state)]
-    (let [value (calculate-radius (:image state) point)
+    (let [value (calculate-radius state point)
           r (* value 10)]
-      (q/ellipse (:x point) (:y point) r r))))
+      (q/ellipse (:x point) (:y point) r r)))
+  (q/no-loop))
 
 (defn ^:export run-sketch [data w h]
   (q/defsketch stippling
@@ -57,6 +66,5 @@
       (q/color-mode :rgb)
       (q/image-mode :corner)
       (setup-state data w h))
-    :update update-state
     :draw draw-state
     :middleware [m/fun-mode]))

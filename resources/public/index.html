@@ -27,9 +27,16 @@
       function createSketch(url) {   
         var img = new Image();
         img.onload = function() {
-          stippling.core.run_sketch(this.src, this.width, this.height);
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0, img.width, img.height);
+          const data = ctx.getImageData(0, 0, img.width, img.height).data;
+          stippling.core.run_sketch(data, img.width, img.height);
         };
         img.src = url;
+        img.crossOrigin = "Anonymous";
       }
 
       function hideSetup() {
